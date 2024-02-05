@@ -420,7 +420,6 @@ def fit_model(model, loss, opt, train_dl, valid_dl, sch=None, epsilon=1e-2, is_l
               print_info=True, save_grads=False, test_dl=None, skip_epoch_eval=True, sample_pct=0.5, sample_loss_threshold=0.75, save_models=False, 
               print_grads=False, print_model_layers=False, tr_batch_fn=None, te_batch_fn=None, device=None, max_updates=800_000, patience_updates=1, 
               enable_redo=False, save_best_model=True, save_init_model=True, max_epochs=100000, sharpness_aware=False, **misc):
-    # TODO: Enable sharpness-aware version
     # setup update metadata
     MAX_LOSS_VAL = 1000000.
     PR = lambda x: print (x) if print_info else None
@@ -482,14 +481,14 @@ def fit_model(model, loss, opt, train_dl, valid_dl, sch=None, epsilon=1e-2, is_l
             if save_models:
                 stats['models'].append(copy.deepcopy(model).cpu())
 
-    def _update(x,y,diff_device, device=device, save_grads=False, print_grads=False):
-        # TODO: Enable sharpness_aware version
+    def _update(x,y,diff_device, device=device, save_grads=False, print_grads=False, sharpness_aware=False):
+
         model.train()
 
         # if diff_device:
         #     x = x.to(device, non_blocking=False)
         #     y = y.to(device, non_blocking=False)
-
+        # TODO: Enable sharpness_aware version
         opt.zero_grad()
         out = model(x)
         if loss is F.cross_entropy or loss is hinge_loss:
@@ -562,8 +561,7 @@ def fit_model(model, loss, opt, train_dl, valid_dl, sch=None, epsilon=1e-2, is_l
 
                 # update flag for printing gradients
                 update_flag = print_model_layers and (num_updates == 0 or (num_updates % act_update_gap == 0 and print_grads))
-                # TODO: Make this compatible with SAM.
-                _update(xb, yb, diff_device, device=device, save_grads=save_grads, print_grads=update_flag)
+                _update(xb, yb, diff_device, device=device, save_grads=save_grads, print_grads=update_flag, sharpness_aware=sharpness_aware)
 
                 if (num_evals == 0 or num_updates % act_update_gap == 0):
                     num_evals += 1
