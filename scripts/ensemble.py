@@ -9,10 +9,10 @@ from torch.utils.data import TensorDataset, DataLoader
 from torch import optim, nn
 import torch.nn.functional as F
 import dill
-import gpu_utils as gu
-import data_utils as du
-import synth_models as sm
-import utils
+import scripts.gpu_utils as gu
+import scripts.data_utils as du
+import scripts.synth_models as sm
+import scripts.utils
 
 class Ensemble(nn.Module):
 

@@ -11,9 +11,9 @@ import torchvision
 from torch import optim, nn
 import torch.nn.functional as F
 from scipy.linalg import qr
-import lms_utils as au
-import ptb_utils as pu
-import gpu_utils as gu
+import scripts.lms_utils as au
+import scripts.ptb_utils as pu
+import scripts.gpu_utils as gu
 from sklearn import metrics
 import collections
 from sklearn.metrics import roc_auc_score

@@ -16,17 +16,17 @@ from torch.utils.data import TensorDataset, DataLoader
 from torch.autograd import Variable
 import pandas as pd
 
-sys.path.append('scripts')
-import lms_utils
-import data_utils as du
-import gpu_utils as gu
-import ptb_utils as pu
-import synth_models
-import gendata
-import utils
-import synth_models as sm
-import mnistcifar_utils as mc_utils
-import ensemble
+# sys.path.append('scripts')
+from scripts import lms_utils
+from scripts import data_utils as du
+from scripts import gpu_utils as gu
+from scripts import ptb_utils as pu
+from scripts import synth_models
+from scripts import gendata
+from scripts import utils
+from scripts import synth_models as sm
+from scripts import mnistcifar_utils as mc_utils
+from scripts import ensemble
 
 torch.backends.cudnn.benchmark = True
 torch.backends.cudnn.enabled = True

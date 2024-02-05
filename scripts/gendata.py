@@ -4,8 +4,8 @@ import random
 from collections import Counter
 import torch
 from torch.utils.data import TensorDataset, DataLoader
-import utils
-import gpu_utils as gu
+from scripts import utils
+import scripts.gpu_utils as gu
 
 def _prep_data(X, Y, N_tr, N_te, bs, nw, pm, w, orth_matrix=None):
     X_te, Y_te = torch.Tensor(X[:N_te,:]), torch.Tensor(Y[:N_te])

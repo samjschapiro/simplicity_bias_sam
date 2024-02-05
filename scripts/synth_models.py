@@ -3,11 +3,11 @@ import torch, torchvision
 from torch import optim, nn
 import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader
-import gendata
-import utils
+import scripts.gendata
+import scripts.utils
 import numpy as np
-import gpu_utils as gu
-import ptb_utils as pu 
+import scripts.gpu_utils as gu
+import scripts.ptb_utils as pu 
 
 def kaiming_init(m):
     if isinstance(m, nn.Linear):

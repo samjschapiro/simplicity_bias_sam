@@ -10,10 +10,10 @@ import torch.nn.functional as F
 from sklearn import metrics
 from torch.utils.data import TensorDataset, DataLoader
 
-import gpu_utils as gu
-import lms_utils as au
-import synth_models
-import utils
+import scripts.gpu_utils as gu
+import scripts.lms_utils as au
+import scripts.synth_models
+import scripts.utils
 import matplotlib.pyplot as plt
 import pathlib
 

@@ -1,5 +1,5 @@
 import seaborn as sns
-import utils
+import scripts.utils
 import random
 import os, copy, pickle, time
 import itertools
@@ -12,9 +12,9 @@ from torch.utils.data import TensorDataset, DataLoader
 from torch import optim, nn
 import torch.nn.functional as F
 
-import gpu_utils as gu
-import data_utils as du
-import synth_models
+import scripts.gpu_utils as gu
+import scripts.data_utils as du
+import scripts.synth_models
 
 #import foolbox as fb
 #from autoattack import AutoAttack

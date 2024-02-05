@@ -5,9 +5,9 @@ from collections import defaultdict, Counter, OrderedDict
 import numpy as np
 import torch
 from torch.utils.data import TensorDataset, DataLoader
-import utils
-import gpu_utils as gu
-import data_utils as du
+import scripts.utils
+import scripts.gpu_utils as gu
+import scripts.data_utils as du
 
 def get_binary_mnist(y1=0, y2=1, apply_padding=True, repeat_channels=True):
     
