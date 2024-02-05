@@ -1,7 +1,7 @@
 import seaborn as sns
 import scripts.gpu_utils as gu
 import scripts.data_utils as du
-import scripts.utils
+from scripts import utils
 import random
 import os, copy, pickle, time
 import itertools
