@@ -17,6 +17,7 @@ import scripts.gpu_utils as gu
 from sklearn import metrics
 import collections
 from sklearn.metrics import roc_auc_score
+from sam import SAM
 
 plt.style.use('seaborn-ticks')
 import matplotlib.ticker as ticker
@@ -416,7 +417,7 @@ def pgd_adv_fit_model(model, opt, tr_dl, te_dl, attack, eval_attack=None, device
     return stats
 
 
-def fit_model(model, loss, opt, train_dl, valid_dl, sch=None, epsilon=1e-2, is_loss_epsilon=False, update_gap=50, update_print_gap=50, gap=None, 
+def fit_model(model, loss, base_opt, train_dl, valid_dl, sch=None, epsilon=1e-2, is_loss_epsilon=False, update_gap=50, update_print_gap=50, gap=None, 
               print_info=True, save_grads=False, test_dl=None, skip_epoch_eval=True, sample_pct=0.5, sample_loss_threshold=0.75, save_models=False, 
               print_grads=False, print_model_layers=False, tr_batch_fn=None, te_batch_fn=None, device=None, max_updates=800_000, patience_updates=1, 
               enable_redo=False, save_best_model=True, save_init_model=True, max_epochs=100000, sharpness_aware=False, **misc):
@@ -441,7 +442,7 @@ def fit_model(model, loss, opt, train_dl, valid_dl, sch=None, epsilon=1e-2, is_l
     # redo setup
     if enable_redo:
         init_model_sd = copy.deepcopy(model.state_dict())
-        init_opt_sd = copy.deepcopy(opt.state_dict())
+        init_opt_sd = copy.deepcopy(base_opt.state_dict())
     else:
         init_model_sd = None
         init_opt_sd = None
@@ -481,7 +482,18 @@ def fit_model(model, loss, opt, train_dl, valid_dl, sch=None, epsilon=1e-2, is_l
             if save_models:
                 stats['models'].append(copy.deepcopy(model).cpu())
 
-    def _update(x,y,diff_device, device=device, save_grads=False, print_grads=False, sharpness_aware=False):
+    def _update(x,y,diff_device, device=device, save_grads=False, print_grads=False, sharpness_aware=False):    
+        def enable_bn(model):
+            if isinstance(model, nn.BatchNorm1d):
+                model.backup_momentum = model.momentum
+                model.momentum = 0
+        
+        def disable_bn(model):
+            if isinstance(model, nn.BatchNorm1d):
+                model.momentum = model.backup_momentum
+
+        if sharpness_aware == True:
+            opt = SAM(model.parameters(), base_opt, lr=1e-3, weight_decay=1e-4)
 
         model.train()
 
@@ -489,6 +501,9 @@ def fit_model(model, loss, opt, train_dl, valid_dl, sch=None, epsilon=1e-2, is_l
         #     x = x.to(device, non_blocking=False)
         #     y = y.to(device, non_blocking=False)
         # TODO: Enable sharpness_aware version
+
+
+
         opt.zero_grad()
         out = model(x)
         if loss is F.cross_entropy or loss is hinge_loss:
@@ -636,9 +651,9 @@ def fit_model(model, loss, opt, train_dl, valid_dl, sch=None, epsilon=1e-2, is_l
 
             # update LR via scheduler
             if sch is not None:
-                cur_lr = next(iter(opt.param_groups))['lr']
+                cur_lr = next(iter(base_opt.param_groups))['lr']
                 sch.step()
-                new_lr = next(iter(opt.param_groups))['lr']
+                new_lr = next(iter(base_opt.param_groups))['lr']
                 if new_lr != cur_lr:
                     PR('Epoch {}, LR : {} -> {}'.format(num_epochs, cur_lr, new_lr))
 
